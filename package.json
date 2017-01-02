@@ -1,0 +1,41 @@
+{
+    "name": "highlight-words",
+    "displayName": "highlight-words",
+    "description": "Highlight all occurrences of words or expressions",
+    "version": "0.0.2",
+    "publisher": "rsbondi",
+    "engines": {
+        "vscode": "^1.5.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./extension",
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.0.3",
+        "vscode": "^1.0.0",
+        "mocha": "^2.3.3",
+        "eslint": "^3.6.0",
+        "@types/node": "^6.0.40",
+        "@types/mocha": "^2.2.32"
+    },
+	"contributes": {
+		"commands": [{
+			"command": "extension.addHighlight",
+			"title": "Highlight Selection"
+		}, {
+			"command": "extension.removeHighlight",
+			"title": "Highlight Remove"
+		}, {
+			"command": "extension.addRegExpHighlight",
+			"title": "Highlight Expression"
+		}]
+	}
+}
