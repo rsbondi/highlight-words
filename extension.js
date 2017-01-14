@@ -45,14 +45,14 @@ function activate(context) {
     });
     
     var colors = [
-        { light: 'darkblue', dark: 'cyan' },
-        { light: 'darkred', dark: 'pink' },
-        { light: 'darkgreen', dark: 'lightgreen' },
-        { light: 'darkpurple', dark: 'magenta' },
-        { light: 'darkblue', dark: 'cornflowerblue' },
-        { light: 'darkred', dark: 'orange' },
-        { light: 'darkgreen', dark: 'green' },
-        { light: 'darkpurple', dark: 'red' },
+        { light: '#b3d9ff', dark: 'cyan' },
+        { light: '#e6ffb3', dark: 'pink' },
+        { light: '#b3b3ff', dark: 'lightgreen' },
+        { light: '#ffd9b3', dark: 'magenta' },
+        { light: '#ffb3ff', dark: 'cornflowerblue' },
+        { light: '#b3ffb3', dark: 'orange' },
+        { light: '#ffff80', dark: 'green' },
+        { light: '#d1e0e0', dark: 'red' },
     ];
     var decorators = [];
     colors.forEach(function (color) {
@@ -63,7 +63,8 @@ function activate(context) {
             overviewRulerLane: vscode.OverviewRulerLane.Right,
             light: {
                 // this color will be used in light color themes
-                borderColor: color.dark
+                borderColor: color.light,
+                backgroundColor: color.light
             },
             dark: {
                 // this color will be used in dark color themes
