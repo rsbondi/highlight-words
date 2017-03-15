@@ -3,7 +3,6 @@
 var vscode = require('vscode');
 
 function activate(context) {
-    console.log('highlight-words is activated');
     var words = [];
     vscode.commands.registerCommand('extension.addRegExpHighlight', function () {
         vscode.window.showInputBox({prompt: 'Enter expression'})
@@ -109,7 +108,6 @@ function activate(context) {
                 var dec = [];
                 decs.push(dec);
             });
-            console.log('highlight words', words);
             words.forEach(function (i, n) {
                 var regEx = new RegExp(i, 'g');
                 while (match = regEx.exec(text)) {
