@@ -76,13 +76,11 @@ function activate(context) {
     if (activeEditor) {
         triggerUpdateDecorations();
     }
-    vscode.window.onDidChangeActiveTextEditor(function (editor) {
-        activeEditor = editor;
-        if (editor) {
-            updateDecorations();
-        }
+    vscode.window.onDidChangeVisibleTextEditors(function (editor) {
+        updateDecorations();
     }, null, context.subscriptions);
     vscode.workspace.onDidChangeTextDocument(function (event) {
+        activeEditor = vscode.window.activeTextEditor;
         if (activeEditor && event.document === activeEditor.document) {
             triggerUpdateDecorations();
         }
@@ -96,10 +94,6 @@ function activate(context) {
     }
 
     function updateDecorations() {
-        if (!activeEditor) {
-            return;
-        }
-
         vscode.window.visibleTextEditors.forEach(editor => {
             var text = editor.document.getText();
             var match;
