@@ -76,25 +76,33 @@ function activate(context) {
     if (activeEditor) {
         triggerUpdateDecorations();
     }
+
     vscode.window.onDidChangeVisibleTextEditors(function (editor) {
         updateDecorations();
     }, null, context.subscriptions);
+
     vscode.workspace.onDidChangeTextDocument(function (event) {
         activeEditor = vscode.window.activeTextEditor;
         if (activeEditor && event.document === activeEditor.document) {
             triggerUpdateDecorations();
         }
     }, null, context.subscriptions);
+
     var timeout = null;
     function triggerUpdateDecorations() {
         if (timeout) {
             clearTimeout(timeout);
         }
-        timeout = setTimeout(updateDecorations, 500);
+        timeout = setTimeout(updateActive, 500);
     }
 
-    function updateDecorations() {
+    function updateActive() {
+        updateDecorations(true)
+    }
+
+    function updateDecorations(active) {
         vscode.window.visibleTextEditors.forEach(editor => {
+            if(active && editor.document != vscode.window.activeTextEditor.document) return;
             var text = editor.document.getText();
             var match;
             var decs = [];
