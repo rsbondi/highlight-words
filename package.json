@@ -2,7 +2,7 @@
     "name": "highlight-words",
     "displayName": "highlight-words",
     "description": "Highlight all occurrences of words or expressions",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "icon": "images/highlight.png",
     "publisher": "rsbondi",
     "engines": {
