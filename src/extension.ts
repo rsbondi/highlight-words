@@ -1,5 +1,5 @@
 'use strict';
-import { commands, ExtensionContext, window, OverviewRulerLane, workspace, Range, QuickPickItem } from 'vscode';
+import { commands, ExtensionContext, window, OverviewRulerLane, workspace, Range, QuickPickItem, ThemableDecorationRenderOptions } from 'vscode';
 
 export function activate(context: ExtensionContext) {
     interface Highlightable {
@@ -9,8 +9,9 @@ export function activate(context: ExtensionContext) {
     }
 
     let words: Highlightable[] = []
+    let decorators = []
 
-    commands.registerCommand('extension.addRegExpHighlight', function () {
+    commands.registerCommand('highlightwords.addRegExpHighlight', function () {
         window.showInputBox({ prompt: 'Enter expression' })
             .then(word => {
                 try {
@@ -65,15 +66,15 @@ export function activate(context: ExtensionContext) {
         }
     }
 
-    commands.registerCommand('extension.addHighlight', function () {
+    commands.registerCommand('highlightwords.addHighlight', function () {
         addSelected()
     });
 
-    commands.registerCommand('extension.addHighlightWithOptions', function () {
+    commands.registerCommand('highlightwords.addHighlightWithOptions', function () {
         addSelected(true)
     });
 
-    commands.registerCommand('extension.removeHighlight', function () {
+    commands.registerCommand('highlightwords.removeHighlight', function () {
         window.showQuickPick(words.concat([{ expression: '* All *', wholeWord: false, ignoreCase: false }]).map(w => {
             return {
                 label: w.expression,
@@ -94,47 +95,64 @@ export function activate(context: ExtensionContext) {
             })
     });
 
+    commands.registerCommand('highlightwords.removeAllHighlights', function () {
+        words = []
+        updateDecorations();
+    });
+    
     interface HighlightColors {
         light: string
         dark: string
     }
 
-    let colors: HighlightColors[] = [
-        { light: '#b3d9ff', dark: 'cyan' },
-        { light: '#e6ffb3', dark: 'pink' },
-        { light: '#b3b3ff', dark: 'lightgreen' },
-        { light: '#ffd9b3', dark: 'magenta' },
-        { light: '#ffb3ff', dark: 'cornflowerblue' },
-        { light: '#b3ffb3', dark: 'orange' },
-        { light: '#ffff80', dark: 'green' },
-        { light: '#d1e0e0', dark: 'red' },
-    ];
+    interface BoxOptions {
+        light: boolean,
+        dark: boolean
+    }
 
-    let decorators = [];
-    colors.forEach(function (color) {
-        let decorationType = window.createTextEditorDecorationType({
-            borderWidth: '2px',
-            borderStyle: 'solid',
-            overviewRulerLane: OverviewRulerLane.Right,
-            light: {
-                // this color will be used in light color themes
-                overviewRulerColor: color.light,
-                borderColor: color.light,
-                backgroundColor: color.light
-            },
-            dark: {
+    function getDeocratorsFromConfig() {
+        let config = workspace.getConfiguration('highlightwords')
+        let colors: HighlightColors[] = config.get('colors');
+    
+        decorators = [];
+        colors.forEach(function (color) {
+            var dark: ThemableDecorationRenderOptions = {
                 // this color will be used in dark color themes
                 overviewRulerColor: color.dark,
+                backgroundColor: config.get<BoxOptions>('box').dark ? 'inherit' : color.dark,
                 borderColor: color.dark
             }
+            if(!config.get<BoxOptions>('box').dark) 
+                dark.color = '#555555'
+            let decorationType = window.createTextEditorDecorationType({
+                borderWidth: '2px',
+                borderStyle: 'solid',
+                overviewRulerLane: OverviewRulerLane.Right,
+                light: {
+                    // this color will be used in light color themes
+                    overviewRulerColor: color.light,
+                    borderColor: color.light,
+                    backgroundColor: config.get<BoxOptions>('box').light ? 'inherit' : color.light
+                },
+                dark: dark
+            });
+            decorators.push(decorationType);
         });
-        decorators.push(decorationType);
-    });
+    
+        return decorators;  
+    }
+
+    decorators = getDeocratorsFromConfig()
 
     let activeEditor = window.activeTextEditor;
     if (activeEditor) {
         triggerUpdateDecorations();
     }
+
+    workspace.onDidChangeConfiguration(() => {
+        decorators = getDeocratorsFromConfig()
+        updateDecorations()
+    })
 
     window.onDidChangeVisibleTextEditors(function (editor) {
         updateDecorations();
