@@ -112,7 +112,7 @@ export function activate(context: ExtensionContext) {
 
     function getDeocratorsFromConfig() {
         let config = workspace.getConfiguration('highlightwords')
-        let colors: HighlightColors[] = config.get('colors');
+        let colors: HighlightColors[] = <HighlightColors[]>config.get('colors');
     
         decorators = [];
         colors.forEach(function (color) {
