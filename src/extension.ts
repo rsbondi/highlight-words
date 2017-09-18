@@ -40,6 +40,10 @@ export function activate(context: ExtensionContext) {
     function addSelected(withOptions?: boolean) {
         const editor = window.activeTextEditor;
         let word = editor.document.getText(editor.selection);
+        if(!word) {
+            const range = editor.document.getWordRangeAtPosition(editor.selection.start)
+            if(range) word = editor.document.getText(range)
+        }
         if (!word) {
             window.showInformationMessage('Nothing selected!')
             return;

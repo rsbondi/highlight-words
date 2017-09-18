@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.0.7 (2017-09-18)
+- select word at cursor if nothing selected
+
 ## 0.0.6 (2017-09-13)
 - make colors configurable
 - option to display box or background style highlight

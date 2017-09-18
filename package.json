@@ -2,7 +2,7 @@
     "name": "highlight-words",
     "displayName": "highlight-words",
     "description": "Highlight all occurrences of words or expressions",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "icon": "images/highlight.png",
     "publisher": "rsbondi",
     "engines": {
@@ -40,7 +40,7 @@
         "commands": [
             {
                 "command": "highlightwords.addHighlight",
-                "title": "Highlight Selection"
+                "title": "Highlight Current"
             },
             {
                 "command": "highlightwords.removeHighlight",

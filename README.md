@@ -4,11 +4,11 @@
 
 This extension is adapted from the sample VS code extension decorator-sample, inspired by atom-quick-highlight.
 
-The sample creates a decoration for each selected word that appears in all editors. 
+It creates a decoration for each selected word that appears in all editors. 
 
 # Usage
 
-* You can add words by selecting text in the editor and chosing "Highlight Selection" from the command pallet.  
+* You can add words by chosing "Highlight Current" from the command pallet, this will highlight the word at the cursor or the selection.  
 * To stop highlighting, choose "Highlight Remove", then the desired word or expression, or all
 * You may also remove all from the command "Highlight Remove All" without the prompt for selection
 * To highlight using regular expression choose "Highlight Expression" and enter expression(slashes optional, can ignore case with `/expression/i`(g flag is automatic, i flag accepted, all others ignored).  
