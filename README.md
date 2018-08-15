@@ -13,6 +13,7 @@ It creates a decoration for each selected word that appears in all editors.
 * You may also remove all from the command "Highlight Remove All" without the prompt for selection
 * To highlight using regular expression choose "Highlight Expression" and enter expression(slashes optional, can ignore case with `/expression/i`(g flag is automatic, i flag accepted, all others ignored).  
 * To highlight with options choose "Highlight Selection with Options" and choose `whole word`, `ignore case` or `both` when presented
+* You can set the mode for "Highlight Current" from the "Set Highlight Mode" command.  The default can be set in the configuration.
 
 # Configuration
 
@@ -21,6 +22,8 @@ The following options can be configured
 `highlightwords.colors`: this is an array of light/dark pairs for respective theme types, you can have as few or as many as you like
 
 `highlightwords.box`: show highlights as a box around the selections if true, set highlight as background color if false
+
+`highlightwords.defaultMode`: the initial mode when initialized. 0=default, 1=whole word, 2=ignore case, 3=whole word and ignore case
 
 defaults shown below
 
@@ -35,10 +38,15 @@ defaults shown below
     { "light": "#ffff80", "dark": "green" },
     { "light": "#d1e0e0", "dark": "red" }                                        
     ...
-],"highlightwords.box": {
+],
+"highlightwords.box": {
     "light": false,
     "dark": true
+},
+"highlightwords.defaultMode": {
+    "default": 0
 }
+
 ```
 
 

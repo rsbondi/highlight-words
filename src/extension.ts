@@ -10,6 +10,13 @@ export function activate(context: ExtensionContext) {
 
     let words: Highlightable[] = []
     let decorators = []
+    enum Modes {
+        Default,
+        WholeWord,
+        IgnoreCase,
+        Both
+    }    
+    let mode = 0
 
     commands.registerCommand('highlightwords.addRegExpHighlight', function () {
         window.showInputBox({ prompt: 'Enter expression' })
@@ -64,7 +71,10 @@ export function activate(context: ExtensionContext) {
                 })
             }
             else {
-                words.push({ expression: word, wholeWord: false, ignoreCase: false });
+                const ww = mode == Modes.WholeWord || mode == Modes.Both
+                const ic = mode == Modes.IgnoreCase || mode == Modes.Both
+                
+                words.push({ expression: word, wholeWord: ww, ignoreCase: ic });
                 updateDecorations()
             }
         }
@@ -103,6 +113,15 @@ export function activate(context: ExtensionContext) {
         words = []
         updateDecorations();
     });
+
+    commands.registerCommand('highlightwords.setHighlightMode', function () {
+        const modes = ['Default', 'Whole Word', 'Ignore Case', 'Both'].map((s, i) => mode == i ? s+' ✅' : s)
+        window.showQuickPick(modes).then(option => {
+            if (typeof option == 'undefined') return;
+
+            mode = modes.indexOf(option)
+        })
+    })
     
     interface HighlightColors {
         light: string
@@ -114,9 +133,11 @@ export function activate(context: ExtensionContext) {
         dark: boolean
     }
 
-    function getDeocratorsFromConfig() {
+    function getConfigValues() {
         let config = workspace.getConfiguration('highlightwords')
         let colors: HighlightColors[] = <HighlightColors[]>config.get('colors');
+        const defaultMode = <number>config.get('defaultMode')
+        if(typeof defaultMode != 'undefined') mode = defaultMode
     
         decorators = [];
         colors.forEach(function (color) {
@@ -146,7 +167,7 @@ export function activate(context: ExtensionContext) {
         return decorators;  
     }
 
-    decorators = getDeocratorsFromConfig()
+    decorators = getConfigValues()
 
     let activeEditor = window.activeTextEditor;
     if (activeEditor) {
@@ -154,7 +175,7 @@ export function activate(context: ExtensionContext) {
     }
 
     workspace.onDidChangeConfiguration(() => {
-        decorators = getDeocratorsFromConfig()
+        decorators = getConfigValues()
         updateDecorations()
     })
 

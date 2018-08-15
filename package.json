@@ -2,16 +2,16 @@
     "name": "highlight-words",
     "displayName": "highlight-words",
     "description": "Highlight all occurrences of words or expressions",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "icon": "images/highlight.png",
     "publisher": "rsbondi",
     "engines": {
         "vscode": "^1.10.0"
     },
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/rsbondi/highlight-words"
-	},
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rsbondi/highlight-words"
+    },
     "categories": [
         "Other"
     ],
@@ -20,7 +20,8 @@
         "onCommand:highlightwords.removeHighlight",
         "onCommand:highlightwords.addRegExpHighlight",
         "onCommand:highlightwords.addHighlightWithOptions",
-        "onCommand:highlightwords.removeAllHighlights"
+        "onCommand:highlightwords.removeAllHighlights",
+        "onCommand:highlightwords.setHighlightMode"
     ],
     "main": "./out/src/extension",
     "scripts": {
@@ -57,27 +58,58 @@
             {
                 "command": "highlightwords.addHighlightWithOptions",
                 "title": "Highlight Selection with Options"
+            },
+            {
+                "command": "highlightwords.setHighlightMode",
+                "title": "Set Highlight Mode"
             }
         ],
         "configuration": {
             "properties": {
                 "highlightwords.colors": {
                     "default": [
-                        { "light": "#b3d9ff", "dark": "cyan" },
-                        { "light": "#e6ffb3", "dark": "pink" },
-                        { "light": "#b3b3ff", "dark": "lightgreen" },
-                        { "light": "#ffd9b3", "dark": "magenta" },
-                        { "light": "#ffb3ff", "dark": "cornflowerblue" },
-                        { "light": "#b3ffb3", "dark": "orange" },
-                        { "light": "#ffff80", "dark": "green" },
-                        { "light": "#d1e0e0", "dark": "red" }                                        
+                        {
+                            "light": "#b3d9ff",
+                            "dark": "cyan"
+                        },
+                        {
+                            "light": "#e6ffb3",
+                            "dark": "pink"
+                        },
+                        {
+                            "light": "#b3b3ff",
+                            "dark": "lightgreen"
+                        },
+                        {
+                            "light": "#ffd9b3",
+                            "dark": "magenta"
+                        },
+                        {
+                            "light": "#ffb3ff",
+                            "dark": "cornflowerblue"
+                        },
+                        {
+                            "light": "#b3ffb3",
+                            "dark": "orange"
+                        },
+                        {
+                            "light": "#ffff80",
+                            "dark": "green"
+                        },
+                        {
+                            "light": "#d1e0e0",
+                            "dark": "red"
+                        }
                     ]
                 },
                 "highlightwords.box": {
                     "default": {
                         "light": false,
-                        "dark" : true
+                        "dark": true
                     }
+                },
+                "highlightwords.defaultMode": {
+                    "default": 0
                 }
             }
         }

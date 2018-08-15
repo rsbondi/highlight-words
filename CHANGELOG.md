@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.0.8 (2018-08-14)
+- added `defaultMode` option
+
 ## 0.0.7 (2017-09-18)
 - select word at cursor if nothing selected
 
