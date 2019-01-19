@@ -1,5 +1,5 @@
 'use strict';
-import { commands, ExtensionContext, window, workspace } from 'vscode';
+import { commands, ExtensionContext, window, workspace, Position, Selection, Range } from 'vscode';
 import HighlightConfig from './config'
 import Highlight from './highlight'
 
@@ -61,6 +61,38 @@ export function activate(context: ExtensionContext) {
         })
     })
     
+    function next(e) {
+        const doc = window.activeTextEditor.document
+        const ed = window.activeTextEditor
+        const iAmHere = ed.selection.active
+        const offset = doc.offsetAt(iAmHere)
+        const text = doc.getText()
+        const slice = text.slice(offset+1)
+        const opts = e.highlight.ignoreCase ? 'i' : ''
+        const expression = e.highlight.wholeWord ? '\\b' + e.highlight.expression + '\\b' : e.highlight.expression
+
+        const re = new RegExp(expression, opts)
+        const pos = slice.search(re)
+        if(pos == -1) { // wrap
+            if(offset !=0) {
+                const home = new Position(0, 0)
+                window.activeTextEditor.selection = new Selection(home, home)
+                next(e)
+            }
+            return
+        }
+        const word = slice.match(re)
+        const start = doc.positionAt(pos+offset+1)
+        const end = new Position(start.line, start.character+word[0].length)
+        window.activeTextEditor.revealRange(new Range(start, end))
+        window.activeTextEditor.selection = new Selection(start, start)
+    }
+    commands.registerCommand('highlightwords.findNext', e => {
+        next(e)
+        //commands.executeCommand("workbench.action.findInFiles")
+
+    });
+
     configValues = HighlightConfig.getConfigValues()
     highlight.setDecorators(configValues.decorators)
     commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar)

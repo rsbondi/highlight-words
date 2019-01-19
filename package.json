@@ -75,7 +75,16 @@
             {
                 "command": "highlightwords.toggleSidebar",
                 "title": "Toggle Highlight Sidebar"
-            }
+            },
+            {
+                "command": "highlightwords.findNext",
+                "title": "Next",
+                "icon": {
+                  "light": "resources/icons/arrow-right.svg",
+                  "dark": "resources/icons/arrow-right.svg"
+                }
+              }
+          
 
         ],
         "configuration": {
@@ -158,7 +167,13 @@
                 {
                     "command": "highlightwords.treeHighlightOptions",
                     "when": "view == hilightWordsExplore"
-                }
+                },
+                {
+                    "command": "highlightwords.findNext",
+                    "when": "view == hilightWordsExplore",
+                    "group": "inline"
+                  }
+            
             ]
         }
     }
