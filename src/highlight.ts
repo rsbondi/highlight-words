@@ -1,7 +1,8 @@
 'use strict';
 import { window, TextEditorDecorationType, Range, QuickPickItem} from 'vscode';
+import HighlightTreeProvider from './tree'
 
-interface Highlightable {
+export interface Highlightable {
     expression: string
     wholeWord: boolean
     ignoreCase: boolean
@@ -14,15 +15,19 @@ enum Modes {
     Both
 }    
 
+const qpOptions = ['ignore case', 'whole word', 'both']
 
 class Highlight {
     private words: Highlightable[]
     private decorators: TextEditorDecorationType[]
     private mode: number
+    private treeProvider: HighlightTreeProvider
 
     constructor() {
         this.words = []
         this.decorators = []
+        this.treeProvider = new HighlightTreeProvider(this.getWords());
+        window.registerTreeDataProvider('hilightWordsExplore', this.treeProvider);
     }
 
     public setMode(m) { this.mode = m }
@@ -54,6 +59,8 @@ class Highlight {
             this.decorators.forEach(function (d, i) {
                 editor.setDecorations(d, decs[i]);
             });
+            this.treeProvider.words = this.words
+            this.treeProvider.refresh()
 
         })
 
@@ -81,6 +88,21 @@ class Highlight {
         this.updateDecorations(true)
     }
 
+    public updateOptions(word) {
+        window.showQuickPick(qpOptions).then(option => {
+            if (!option) return;
+
+            const theword = this.words.map(w => w.expression).indexOf(word)
+
+            this.words[theword] = {
+                expression: word,
+                wholeWord: option == 'whole word' || option == 'both',
+                ignoreCase: option == 'ignore case' || option == 'both'
+            }
+            this.updateDecorations()
+        })
+    }
+
     public addSelected(withOptions?: boolean) {
         const editor = window.activeTextEditor;
         let word = editor.document.getText(editor.selection);
@@ -96,7 +118,7 @@ class Highlight {
         const highlights = this.words.filter(w => w.expression == word) // avoid duplicates
         if (!highlights || !highlights.length) {
             if (withOptions) {
-                window.showQuickPick(['ignore case', 'whole word', 'both']).then(option => {
+                window.showQuickPick(qpOptions).then(option => {
                     if (!option) return;
 
                     this.words.push({

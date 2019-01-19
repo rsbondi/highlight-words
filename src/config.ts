@@ -20,6 +20,7 @@ class HighlightConfig {
     static getConfigValues() :ConfigValues {
         let config = workspace.getConfiguration('highlightwords')
         let colors: HighlightColors[] = <HighlightColors[]>config.get('colors');
+        let box = config.get<BoxOptions>('box')
         const defaultMode = <number>config.get('defaultMode')
     
         let decorators: TextEditorDecorationType[] = [];
@@ -27,10 +28,10 @@ class HighlightConfig {
             var dark: ThemableDecorationRenderOptions = {
                 // this color will be used in dark color themes
                 overviewRulerColor: color.dark,
-                backgroundColor: config.get<BoxOptions>('box').dark ? 'inherit' : color.dark,
+                backgroundColor: box.dark ? 'inherit' : color.dark,
                 borderColor: color.dark
             }
-            if(!config.get<BoxOptions>('box').dark) 
+            if(!box.dark) 
                 dark.color = '#555555'
             let decorationType = window.createTextEditorDecorationType({
                 borderWidth: '2px',
@@ -40,7 +41,7 @@ class HighlightConfig {
                     // this color will be used in light color themes
                     overviewRulerColor: color.light,
                     borderColor: color.light,
-                    backgroundColor: config.get<BoxOptions>('box').light ? 'inherit' : color.light
+                    backgroundColor: box.light ? 'inherit' : color.light
                 },
                 dark: dark
             });

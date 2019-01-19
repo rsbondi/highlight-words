@@ -34,6 +34,14 @@ export function activate(context: ExtensionContext) {
             })
     });
 
+    commands.registerCommand('highlightwords.treeRemoveHighlight', e => {
+        highlight.remove(e)
+    })
+
+    commands.registerCommand('highlightwords.treeHighlightOptions', e => {
+        highlight.updateOptions(e.label)
+    })
+
     commands.registerCommand('highlightwords.removeAllHighlights', function () {
         highlight.clearAll()
     });

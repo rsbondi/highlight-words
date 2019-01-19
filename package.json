@@ -5,8 +5,9 @@
     "version": "0.0.8",
     "icon": "images/highlight.png",
     "publisher": "rsbondi",
+    "license": "MIT",
     "engines": {
-        "vscode": "^1.10.0"
+        "vscode": "^1.23.0"
     },
     "repository": {
         "type": "git",
@@ -31,11 +32,11 @@
         "test": "node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "typescript": "^2.0.3",
-        "vscode": "^1.0.0",
-        "mocha": "^2.3.3",
+        "@types/mocha": "^2.2.32",
         "@types/node": "^6.0.40",
-        "@types/mocha": "^2.2.32"
+        "mocha": "^2.3.3",
+        "typescript": "^2.1.4",
+        "vscode": "^1.1.22"
     },
     "contributes": {
         "commands": [
@@ -62,6 +63,14 @@
             {
                 "command": "highlightwords.setHighlightMode",
                 "title": "Set Highlight Mode"
+            },
+            {
+                "command": "highlightwords.treeRemoveHighlight",
+                "title": "Remove"
+            },
+            {
+                "command": "highlightwords.treeHighlightOptions",
+                "title": "Change Options"
             }
         ],
         "configuration": {
@@ -112,6 +121,36 @@
                     "default": 0
                 }
             }
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "hilight-words-explorer",
+                    "title": "Highlight Words",
+                    "icon": "resources/icons/color-palette.svg"
+                }
+            ]
+        },
+        "views": {
+            "hilight-words-explorer": [
+                {
+                    "id": "hilightWordsExplore",
+                    "name": "Highlights"
+                }
+            ]
+        },
+        "menus": {
+            "view/item/context": [
+                {
+                    "command": "highlightwords.treeRemoveHighlight",
+                    "when": "view == hilightWordsExplore"
+                },
+                {
+                    "command": "highlightwords.treeHighlightOptions",
+                    "when": "view == hilightWordsExplore"
+                }
+
+            ]
         }
     }
 }
