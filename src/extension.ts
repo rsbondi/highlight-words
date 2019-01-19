@@ -87,10 +87,44 @@ export function activate(context: ExtensionContext) {
         window.activeTextEditor.revealRange(new Range(start, end))
         window.activeTextEditor.selection = new Selection(start, start)
     }
+
     commands.registerCommand('highlightwords.findNext', e => {
         next(e)
         //commands.executeCommand("workbench.action.findInFiles")
 
+    });
+
+    function prev(e) {
+        const doc = window.activeTextEditor.document
+        const ed = window.activeTextEditor
+        const iAmHere = ed.selection.active
+        const offset = doc.offsetAt(iAmHere)
+        const text = doc.getText()
+        const slice = text.slice(0, offset)
+        const opts = e.highlight.ignoreCase ? 'i' : ''
+        const expression = '('+(e.highlight.wholeWord ? '\\b' + e.highlight.expression + '\\b' : e.highlight.expression)+')'
+
+        const re = new RegExp(expression, opts)
+        const pos = slice.search(re)
+        if(pos == -1) { // wrap
+            if(offset !=0) {
+                const home = doc.positionAt(text.length-1)
+                window.activeTextEditor.selection = new Selection(home, home)
+                prev(e)
+            }
+            return
+        }
+        const word = slice.match(re)[0]
+        const index = slice.lastIndexOf(word)
+        const start = doc.positionAt(index)
+        const end = new Position(start.line, start.character+word.length)
+        window.activeTextEditor.revealRange(new Range(start, end))
+        window.activeTextEditor.selection = new Selection(start, start)
+    }
+
+    commands.registerCommand('highlightwords.findPrevious', e => {
+        prev(e)
+        
     });
 
     configValues = HighlightConfig.getConfigValues()

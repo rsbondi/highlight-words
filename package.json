@@ -77,13 +77,21 @@
                 "title": "Toggle Highlight Sidebar"
             },
             {
+                "command": "highlightwords.findPrevious",
+                "title": "Previous",
+                "icon": {
+                  "light": "resources/icons/arrow-left.svg",
+                  "dark": "resources/icons/arrow-left.svg"
+                }
+            },
+            {
                 "command": "highlightwords.findNext",
                 "title": "Next",
                 "icon": {
                   "light": "resources/icons/arrow-right.svg",
                   "dark": "resources/icons/arrow-right.svg"
                 }
-              }
+            }
           
 
         ],
@@ -169,10 +177,15 @@
                     "when": "view == hilightWordsExplore"
                 },
                 {
+                    "command": "highlightwords.findPrevious",
+                    "when": "view == hilightWordsExplore",
+                    "group": "inline"
+                },
+                {
                     "command": "highlightwords.findNext",
                     "when": "view == hilightWordsExplore",
                     "group": "inline"
-                  }
+                }
             
             ]
         }
