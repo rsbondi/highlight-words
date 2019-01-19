@@ -53,7 +53,7 @@ export class HighlightNode extends TreeItem {
 		return this.getOpts()
 	}
 
-	contextValue = 'highlight';
+	contextValue = 'highlights';
 
 }
 

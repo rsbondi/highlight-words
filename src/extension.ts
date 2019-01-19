@@ -5,6 +5,7 @@ import Highlight from './highlight'
 
 export function activate(context: ExtensionContext) {
     let highlight = new Highlight()
+    let configValues
 
     commands.registerCommand('highlightwords.addRegExpHighlight', function () {
         window.showInputBox({ prompt: 'Enter expression' })
@@ -46,6 +47,11 @@ export function activate(context: ExtensionContext) {
         highlight.clearAll()
     });
 
+    commands.registerCommand('highlightwords.toggleSidebar', function () {
+        configValues.showSidebar = !configValues.showSidebar
+        commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar)
+    });
+
     commands.registerCommand('highlightwords.setHighlightMode', function () {
         const modes = ['Default', 'Whole Word', 'Ignore Case', 'Both'].map((s, i) => highlight.getMode() == i ? s+' ✅' : s)
         window.showQuickPick(modes).then(option => {
@@ -55,8 +61,10 @@ export function activate(context: ExtensionContext) {
         })
     })
     
-    let configValues = HighlightConfig.getConfigValues()
+    configValues = HighlightConfig.getConfigValues()
     highlight.setDecorators(configValues.decorators)
+    commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar)
+
 
     let activeEditor = window.activeTextEditor;
     if (activeEditor) {
@@ -64,9 +72,10 @@ export function activate(context: ExtensionContext) {
     }
 
     workspace.onDidChangeConfiguration(() => {
-        let configValues = HighlightConfig.getConfigValues()
+        configValues = HighlightConfig.getConfigValues()
         highlight.setDecorators(configValues.decorators)
-        if(typeof configValues.defaultMode != 'undefined') highlight.setMode(configValues.defaultMode)
+        highlight.setMode(configValues.defaultMode)
+        commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar)
     })
 
     window.onDidChangeVisibleTextEditors(function (editor) {

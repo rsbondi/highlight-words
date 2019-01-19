@@ -71,7 +71,12 @@
             {
                 "command": "highlightwords.treeHighlightOptions",
                 "title": "Change Options"
+            },
+            {
+                "command": "highlightwords.toggleSidebar",
+                "title": "Toggle Highlight Sidebar"
             }
+
         ],
         "configuration": {
             "properties": {
@@ -119,6 +124,9 @@
                 },
                 "highlightwords.defaultMode": {
                     "default": 0
+                },
+                "highlightwords.showSidebar": {
+                    "default": true
                 }
             }
         },
@@ -127,7 +135,8 @@
                 {
                     "id": "hilight-words-explorer",
                     "title": "Highlight Words",
-                    "icon": "resources/icons/color-palette.svg"
+                    "icon": "resources/icons/color-palette.svg",
+                    "when": "showSidebar"
                 }
             ]
         },
@@ -135,7 +144,8 @@
             "hilight-words-explorer": [
                 {
                     "id": "hilightWordsExplore",
-                    "name": "Highlights"
+                    "name": "Highlights",
+                    "when": "showSidebar"
                 }
             ]
         },

@@ -13,7 +13,8 @@ interface BoxOptions {
 
 interface ConfigValues {
     decorators: TextEditorDecorationType[]
-    defaultMode?: number
+    defaultMode?: number,
+    showSidebar?: boolean
 }
 
 class HighlightConfig {
@@ -22,6 +23,7 @@ class HighlightConfig {
         let colors: HighlightColors[] = <HighlightColors[]>config.get('colors');
         let box = config.get<BoxOptions>('box')
         const defaultMode = <number>config.get('defaultMode')
+        const showSidebar = <boolean>config.get('showSidebar')
     
         let decorators: TextEditorDecorationType[] = [];
         colors.forEach(function (color) {
@@ -48,7 +50,7 @@ class HighlightConfig {
             decorators.push(decorationType);
         });
     
-        return {decorators, defaultMode}  
+        return {decorators, defaultMode, showSidebar}  
     }
 }
 
