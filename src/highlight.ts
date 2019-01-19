@@ -1,0 +1,146 @@
+'use strict';
+import { window, TextEditorDecorationType, Range, QuickPickItem} from 'vscode';
+
+interface Highlightable {
+    expression: string
+    wholeWord: boolean
+    ignoreCase: boolean
+}
+
+enum Modes {
+    Default,
+    WholeWord,
+    IgnoreCase,
+    Both
+}    
+
+
+class Highlight {
+    private words: Highlightable[]
+    private decorators: TextEditorDecorationType[]
+    private mode: number
+
+    constructor() {
+        this.words = []
+        this.decorators = []
+    }
+
+    public setMode(m) { this.mode = m }
+    public getMode() { return this.mode }
+    public getWords() { return this.words }
+    public setDecorators(d) { this.decorators = d }
+
+    public updateDecorations(active?) {
+        window.visibleTextEditors.forEach(editor => {
+            if (active && editor.document != window.activeTextEditor.document) return;
+            const text = editor.document.getText();
+            let match;
+            let decs = [];
+            this.decorators.forEach(function () {
+                let dec = [];
+                decs.push(dec);
+            });
+            this.words.forEach(function (w, n) {
+                const opts = w.ignoreCase ? 'gi' : 'g'
+                const expression = w.wholeWord ? '\\b' + w.expression + '\\b' : w.expression
+                const regEx = new RegExp(expression, opts);
+                while (match = regEx.exec(text)) {
+                    const startPos = editor.document.positionAt(match.index);
+                    const endPos = editor.document.positionAt(match.index + match[0].length);
+                    const decoration = { range: new Range(startPos, endPos) };
+                    decs[n % decs.length].push(decoration);
+                }
+            });
+            this.decorators.forEach(function (d, i) {
+                editor.setDecorations(d, decs[i]);
+            });
+
+        })
+
+    }
+
+    public clearAll() {
+        this.words = []
+        this.updateDecorations()
+    }
+
+    public remove(word: QuickPickItem) {
+        if (!word) return;
+        if (word.label == '* All *') this.words = []
+        else {
+            const highlights = this.words.filter(w => w.expression == word.label)
+            if (highlights && highlights.length) {
+                this.words.splice(this.words.indexOf(highlights[0]), 1);
+            }
+        }
+        this.updateDecorations();
+
+    }
+
+    public updateActive() {
+        this.updateDecorations(true)
+    }
+
+    public addSelected(withOptions?: boolean) {
+        const editor = window.activeTextEditor;
+        let word = editor.document.getText(editor.selection);
+        if(!word) {
+            const range = editor.document.getWordRangeAtPosition(editor.selection.start)
+            if(range) word = editor.document.getText(range)
+        }
+        if (!word) {
+            window.showInformationMessage('Nothing selected!')
+            return;
+        }
+        word = word.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1") // raw selected text, not regexp
+        const highlights = this.words.filter(w => w.expression == word) // avoid duplicates
+        if (!highlights || !highlights.length) {
+            if (withOptions) {
+                window.showQuickPick(['ignore case', 'whole word', 'both']).then(option => {
+                    if (!option) return;
+
+                    this.words.push({
+                        expression: word,
+                        wholeWord: option == 'whole word' || option == 'both',
+                        ignoreCase: option == 'ignore case' || option == 'both'
+                    });
+                    this.updateDecorations()
+                })
+            }
+            else {
+                const ww = this.mode == Modes.WholeWord || this.mode == Modes.Both
+                const ic = this.mode == Modes.IgnoreCase || this.mode == Modes.Both
+                
+                this.words.push({ expression: word, wholeWord: ww, ignoreCase: ic });
+                this.updateDecorations()
+            }
+        }
+
+    }
+
+    public addRegExp(word: string) {
+        try {
+            let opts = ''
+            if (word.indexOf('/') == 0) {
+                const slashes = word.split('/')
+                opts = slashes[slashes.length - 1]
+                word = word.slice(1, word.length - opts.length - 1)
+            }
+            new RegExp(word)
+            const highlights = this.words.filter(w => w.expression == word)
+            if (!highlights || !highlights.length) {
+                this.words.push({
+                    expression: word,
+                    wholeWord: false,
+                    ignoreCase: !!~opts.indexOf('i')
+                });
+                this.updateDecorations();
+            }
+        } catch (e) {
+            window.showInformationMessage(word + ' is an invalid expression')
+        }
+
+    }
+}
+
+export default Highlight
