@@ -2,7 +2,7 @@
     "name": "highlight-words",
     "displayName": "highlight-words",
     "description": "Highlight all occurrences of words or expressions",
-    "version": "0.0.8",
+    "version": "0.1.0",
     "icon": "images/highlight.png",
     "publisher": "rsbondi",
     "license": "MIT",
@@ -74,7 +74,7 @@
             },
             {
                 "command": "highlightwords.toggleSidebar",
-                "title": "Toggle Highlight Sidebar"
+                "title": "Highlight Toggle Sidebar"
             },
             {
                 "command": "highlightwords.findPrevious",
