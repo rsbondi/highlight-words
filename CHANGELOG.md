@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.1.1 (2019-01-20)
+- fix broken trigger
+
+## 0.1.0 (2019-01-19)
+- added sidebar
+
 ## 0.0.8 (2018-08-14)
 - added `defaultMode` option
 
