@@ -78,10 +78,10 @@
             },
             {
                 "command": "highlightwords.findPrevious",
-                "title": "Previous",
+                "title": "Back",
                 "icon": {
                   "light": "resources/icons/arrow-left.svg",
-                  "dark": "resources/icons/arrow-left.svg"
+                  "dark": "resources/icons/arrow-left-white.svg"
                 }
             },
             {
@@ -89,7 +89,7 @@
                 "title": "Next",
                 "icon": {
                   "light": "resources/icons/arrow-right.svg",
-                  "dark": "resources/icons/arrow-right.svg"
+                  "dark": "resources/icons/arrow-right-white.svg"
                 }
             }
           
@@ -147,18 +147,8 @@
                 }
             }
         },
-        "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "hilight-words-explorer",
-                    "title": "Highlight Words",
-                    "icon": "resources/icons/color-palette.svg",
-                    "when": "showSidebar"
-                }
-            ]
-        },
         "views": {
-            "hilight-words-explorer": [
+            "explorer": [
                 {
                     "id": "hilightWordsExplore",
                     "name": "Highlights",

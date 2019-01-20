@@ -101,8 +101,8 @@ export function activate(context: ExtensionContext) {
         const offset = doc.offsetAt(iAmHere)
         const text = doc.getText()
         const slice = text.slice(0, offset)
-        const opts = e.highlight.ignoreCase ? 'i' : ''
-        const expression = '('+(e.highlight.wholeWord ? '\\b' + e.highlight.expression + '\\b' : e.highlight.expression)+')'
+        const opts = e.highlight.ignoreCase ? 'gi' : 'g'
+        const expression = e.highlight.wholeWord ? '\\b' + e.highlight.expression + '\\b' : e.highlight.expression
 
         const re = new RegExp(expression, opts)
         const pos = slice.search(re)
@@ -114,11 +114,19 @@ export function activate(context: ExtensionContext) {
             }
             return
         }
-        const word = slice.match(re)[0]
-        const index = slice.lastIndexOf(word)
-        const start = doc.positionAt(index)
-        const end = new Position(start.line, start.character+word.length)
-        window.activeTextEditor.revealRange(new Range(start, end))
+        let word 
+        let found
+        let index
+
+        while ((found = re.exec(slice)) !== null) {
+            index = re.lastIndex
+            word = found[0]
+            console.log('last index', index)
+          }
+
+
+        const start = doc.positionAt(index - word.length)
+        window.activeTextEditor.revealRange(new Range(start, start))
         window.activeTextEditor.selection = new Selection(start, start)
     }
 
