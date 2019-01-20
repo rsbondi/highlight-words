@@ -89,7 +89,7 @@ class Highlight {
     }
 
     public updateOptions(word) {
-        window.showQuickPick(qpOptions).then(option => {
+        window.showQuickPick(["default"].concat(qpOptions)).then(option => {
             if (!option) return;
 
             const theword = this.words.map(w => w.expression).indexOf(word)

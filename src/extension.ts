@@ -168,7 +168,9 @@ export function activate(context: ExtensionContext) {
         if (timeout) {
             clearTimeout(timeout);
         }
-        timeout = setTimeout(highlight.updateActive, 500);
+        timeout = setTimeout(() => {
+            highlight.updateActive()
+        }, 500);
     }
 
 }
