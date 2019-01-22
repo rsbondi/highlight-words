@@ -1,8 +1,7 @@
 'use strict';
 import * as path from 'path';
 import  { Highlightable } from './highlight'
-import { TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, window, Event, EventEmitter,
-    Disposable, commands, TreeView, Command } from 'vscode'
+import { TreeDataProvider, TreeItem, Event, EventEmitter, Command } from 'vscode'
 
 class HighlightTreeProvider implements TreeDataProvider<HighlightNode> {
 	private _onDidChangeTreeData: EventEmitter<any> = new EventEmitter<any>();
