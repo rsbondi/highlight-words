@@ -81,7 +81,6 @@ class Highlight {
             }
         }
         this.updateDecorations();
-
     }
 
     public updateActive() {

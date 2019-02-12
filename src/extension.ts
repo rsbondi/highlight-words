@@ -125,8 +125,7 @@ export function activate(context: ExtensionContext) {
     }
 
     commands.registerCommand('highlightwords.findPrevious', e => {
-        prev(e)
-        
+        prev(e)        
     });
 
     configValues = HighlightConfig.getConfigValues()

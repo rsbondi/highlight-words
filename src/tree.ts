@@ -1,5 +1,4 @@
 'use strict';
-import * as path from 'path';
 import  { Highlightable } from './highlight'
 import { TreeDataProvider, TreeItem, Event, EventEmitter, Command } from 'vscode'
 
@@ -43,8 +42,6 @@ export class HighlightNode extends TreeItem {
     }
 
 	get tooltip(): string {
-        const ingnore = this.highlight.ignoreCase ? '☒' : '☐'
-        const whole = this.highlight.wholeWord ? '☒' : '☐'
 		return `${this.label}-${this.getOpts()}`;
 	}
 
