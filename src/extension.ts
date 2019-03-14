@@ -128,10 +128,14 @@ export function activate(context: ExtensionContext) {
         prev(e)        
     });
 
-    configValues = HighlightConfig.getConfigValues()
-    highlight.setDecorators(configValues.decorators)
-    commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar)
+    updateConfig()
 
+    function updateConfig() {
+        configValues = HighlightConfig.getConfigValues()
+        highlight.setDecorators(configValues.decorators)
+        highlight.setMode(configValues.defaultMode)
+        commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar)
+    }
 
     let activeEditor = window.activeTextEditor;
     if (activeEditor) {
@@ -139,10 +143,7 @@ export function activate(context: ExtensionContext) {
     }
 
     workspace.onDidChangeConfiguration(() => {
-        configValues = HighlightConfig.getConfigValues()
-        highlight.setDecorators(configValues.decorators)
-        highlight.setMode(configValues.defaultMode)
-        commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar)
+        updateConfig()
     })
 
     window.onDidChangeVisibleTextEditors(function (editor) {
