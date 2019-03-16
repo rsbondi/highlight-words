@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.2 (2019-03-16)
+- default mode on load
+
 ## 0.1.1 (2019-01-20)
 - fix broken trigger
 
