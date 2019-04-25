@@ -136,6 +136,15 @@ class Highlight {
                 this.updateDecorations()
             }
         }
+        else
+        {
+            const highlights = this.words.filter(w => w.expression == word)
+            if (highlights && highlights.length) {
+                this.words.splice(this.words.indexOf(highlights[0]), 1);
+            }
+        
+            this.updateDecorations();
+        }
 
     }
 
