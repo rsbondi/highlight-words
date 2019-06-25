@@ -8,6 +8,11 @@ export interface Highlightable {
     ignoreCase: boolean
 }
 
+export interface SearchLocation {
+    index: number
+    count: number
+}
+
 enum Modes {
     Default,
     WholeWord,
@@ -22,11 +27,13 @@ class Highlight {
     private decorators: TextEditorDecorationType[]
     private mode: number
     private treeProvider: HighlightTreeProvider
+    private ranges: {}
 
     constructor() {
         this.words = []
         this.decorators = []
         this.treeProvider = new HighlightTreeProvider(this.getWords());
+        this.ranges = {}
         window.registerTreeDataProvider('hilightWordsExplore', this.treeProvider);
     }
 
@@ -34,6 +41,19 @@ class Highlight {
     public getMode() { return this.mode }
     public getWords() { return this.words }
     public setDecorators(d) { this.decorators = d }
+
+    public getLocationIndex(expression: string, range: Range) {
+        this.treeProvider.currentExpression = expression
+        this.treeProvider.currentIndex = {index: 0, count: 0}
+        Object.keys(this.ranges[expression]).some((r, i) => {
+            const thisrange:Range = this.ranges[expression][i]
+            if(thisrange.start.character == range.start.character && thisrange.start.line == range.start.line) {
+                this.treeProvider.currentIndex = {index: i+1, count: this.ranges[expression].length}
+                return true
+            }
+        })
+        this.treeProvider.refresh()
+    }
 
     public updateDecorations(active?) {
         window.visibleTextEditors.forEach(editor => {
@@ -45,15 +65,17 @@ class Highlight {
                 let dec = [];
                 decs.push(dec);
             });
-            this.words.forEach(function (w, n) {
+            this.words.forEach((w, n) => {
                 const opts = w.ignoreCase ? 'gi' : 'g'
                 const expression = w.wholeWord ? '\\b' + w.expression + '\\b' : w.expression
                 const regEx = new RegExp(expression, opts);
+                this.ranges[w.expression] = []
                 while (match = regEx.exec(text)) {
                     const startPos = editor.document.positionAt(match.index);
                     const endPos = editor.document.positionAt(match.index + match[0].length);
                     const decoration = { range: new Range(startPos, endPos) };
                     decs[n % decs.length].push(decoration);
+                    this.ranges[w.expression].push(decoration.range)
                 }
             });
             this.decorators.forEach(function (d, i) {

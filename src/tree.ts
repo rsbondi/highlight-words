@@ -1,8 +1,10 @@
 'use strict';
-import  { Highlightable } from './highlight'
+import  { Highlightable, SearchLocation } from './highlight'
 import { TreeDataProvider, TreeItem, Event, EventEmitter, Command } from 'vscode'
 
 class HighlightTreeProvider implements TreeDataProvider<HighlightNode> {
+    public currentExpression: string
+    public currentIndex: SearchLocation
 	private _onDidChangeTreeData: EventEmitter<any> = new EventEmitter<any>();
     readonly onDidChangeTreeData: Event<any> = this._onDidChangeTreeData.event;
     
@@ -14,7 +16,7 @@ class HighlightTreeProvider implements TreeDataProvider<HighlightNode> {
 
 	getChildren(element?: HighlightNode): Thenable<HighlightNode[]> {
         let nodes: HighlightNode[] = this.words.map(w => {
-            return new HighlightNode(w.expression, w)
+            return new HighlightNode(w.expression, w, this)
         })
         return Promise.resolve(nodes)
     }
@@ -30,15 +32,20 @@ export class HighlightNode extends TreeItem {
 	constructor(
         public readonly label: string,
         public readonly highlight: Highlightable,
-		public readonly command?: Command
+        public provider: HighlightTreeProvider,
+        public readonly command?: Command
+
 	) {
 		super(label);
     }
     
     private getOpts(): string {
+        const index = this.highlight.expression == this.provider.currentExpression ? 
+        ` ${this.provider.currentIndex.index}/${this.provider.currentIndex.count}` : ''
+
         return this.highlight.ignoreCase && this.highlight.wholeWord ? 'both' :
                this.highlight.ignoreCase ? 'ignoreCase' :
-               this.highlight.wholeWord ? 'wholeWord' : 'default'
+               this.highlight.wholeWord ? 'wholeWord' : 'default' + index
     }
 
 	get tooltip(): string {

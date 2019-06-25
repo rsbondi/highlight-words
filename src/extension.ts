@@ -75,20 +75,23 @@ export function activate(context: ExtensionContext) {
         const pos = slice.search(re)
         if(pos == -1) { 
             if(!wrap) { next(e, true) } // wrap
+            else highlight.getLocationIndex(e.highlight.expression, new Range(new Position(1,1), new Position(1,1)))
             return
         }
         const word = slice.match(re)
         const start = doc.positionAt(pos+offset+nextStart)
         const end = new Position(start.line, start.character+word[0].length)
-        window.activeTextEditor.revealRange(new Range(start, end))
+        const range = new Range(start, end)
+        window.activeTextEditor.revealRange(range)
         window.activeTextEditor.selection = new Selection(start, start)
+        highlight.getLocationIndex(e.highlight.expression, range)
     }
 
     commands.registerCommand('highlightwords.findNext', e => {
         next(e)
     });
 
-    function prev(e) {
+    function prev(e, wrap?:boolean) {
         const doc = window.activeTextEditor.document
         const ed = window.activeTextEditor
         const iAmHere = ed.selection.active
@@ -100,14 +103,16 @@ export function activate(context: ExtensionContext) {
 
         const re = new RegExp(expression, opts)
         const pos = slice.search(re)
-        if(pos == -1) { // wrap
-            if(offset !=0) {
-                const home = doc.positionAt(text.length-1)
-                window.activeTextEditor.selection = new Selection(home, home)
-                prev(e)
-            }
-            return
-        }
+        if(pos == -1) { 
+            if(!wrap) {
+                if(offset !=0) {
+                    const home = doc.positionAt(text.length-1)
+                    window.activeTextEditor.selection = new Selection(home, home)
+                    prev(e, true)
+                    return
+                }
+            } else highlight.getLocationIndex(e.highlight.expression, new Range(new Position(1,1), new Position(1,1)))
+        } 
         let word 
         let found
         let index
@@ -120,8 +125,10 @@ export function activate(context: ExtensionContext) {
 
 
         const start = doc.positionAt(index - word.length)
-        window.activeTextEditor.revealRange(new Range(start, start))
+        const range = new Range(start, start)
+        window.activeTextEditor.revealRange(range)
         window.activeTextEditor.selection = new Selection(start, start)
+        highlight.getLocationIndex(e.highlight.expression, range)
     }
 
     commands.registerCommand('highlightwords.findPrevious', e => {
