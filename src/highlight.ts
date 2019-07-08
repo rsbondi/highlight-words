@@ -157,6 +157,9 @@ class Highlight {
                 this.words.push({ expression: word, wholeWord: ww, ignoreCase: ic });
                 this.updateDecorations()
             }
+        } else if(highlights.length) {
+            this.words.splice(this.words.indexOf(highlights[0]),1)
+            this.updateDecorations()
         }
 
     }

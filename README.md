@@ -8,12 +8,12 @@ It creates a decoration for each selected word that appears in all editors.
 
 # Usage
 
-* You can add words by chosing **Highlight Current** from the command pallet, this will highlight the word at the cursor or the selection.  
+* You can add words by chosing **Highlight Toggle Current** from the command pallet, this will highlight the word at the cursor or the selection.  
 * To stop highlighting, choose **Highlight Remove**, then the desired word or expression, or all
 * You may also remove all from the command **Highlight Remove All** without the prompt for selection
 * To highlight using regular expression choose **Highlight Expression** and enter expression(slashes optional, can ignore case with `/expression/i`(g flag is automatic, i flag accepted, all others ignored).  
 * To highlight with options choose **Highlight Selection with Options** and choose `whole word`, `ignore case` or `both` when presented
-* You can set the mode for "Highlight Current" from the **Set Highlight Mode** command.  The default can be set in the configuration.
+* You can set the mode for "Highlight Toggle Current" from the **Set Highlight Mode** command.  The default can be set in the configuration.
 * Sidebar can show in explorer view and can be toggled on and off with **Highlight Toggle Sidebar** command.  This provides features such as navigating highlighted items, context menu for changing options and removing.
 
 # Configuration

@@ -42,7 +42,7 @@
         "commands": [
             {
                 "command": "highlightwords.addHighlight",
-                "title": "Highlight Current"
+                "title": "Highlight Toggle Current"
             },
             {
                 "command": "highlightwords.removeHighlight",
