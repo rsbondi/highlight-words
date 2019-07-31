@@ -2,7 +2,7 @@
     "name": "highlight-words",
     "displayName": "highlight-words",
     "description": "Highlight all occurrences of words or expressions",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "icon": "images/highlight.png",
     "publisher": "rsbondi",
     "license": "MIT",
