@@ -1,28 +1,30 @@
 'use strict';
-import { commands, ExtensionContext, window, workspace, Position, Selection, Range } from 'vscode';
+import { commands, ExtensionContext, window, workspace, Position, Selection, Range, Disposable } from 'vscode';
 import HighlightConfig from './config'
 import Highlight from './highlight'
+
+let selectionDisposable: Disposable
 
 export function activate(context: ExtensionContext) {
     let highlight = new Highlight()
     let configValues
 
-    commands.registerCommand('highlightwords.addRegExpHighlight', function () {
+    context.subscriptions.push(commands.registerCommand('highlightwords.addRegExpHighlight', function () {
         window.showInputBox({ prompt: 'Enter expression' })
             .then(word => {
                 highlight.addRegExp(word)
             });
-    });
+    }));
 
-    commands.registerCommand('highlightwords.addHighlight', function () {
+    context.subscriptions.push(commands.registerCommand('highlightwords.addHighlight', function () {
         highlight.addSelected()
-    });
+    }));
 
-    commands.registerCommand('highlightwords.addHighlightWithOptions', function () {
+    context.subscriptions.push(commands.registerCommand('highlightwords.addHighlightWithOptions', function () {
         highlight.addSelected(true)
-    });
+    }));
 
-    commands.registerCommand('highlightwords.removeHighlight', function () {
+    context.subscriptions.push(commands.registerCommand('highlightwords.removeHighlight', function () {
         window.showQuickPick(highlight.getWords().concat([{ expression: '* All *', wholeWord: false, ignoreCase: false }]).map(w => {
             return {
                 label: w.expression,
@@ -33,33 +35,40 @@ export function activate(context: ExtensionContext) {
             .then(word => {
                 highlight.remove(word)
             })
-    });
+    }));
 
-    commands.registerCommand('highlightwords.treeRemoveHighlight', e => {
+    context.subscriptions.push(commands.registerCommand('highlightwords.treeRemoveHighlight', e => {
         highlight.remove(e)
-    })
+    }))
 
-    commands.registerCommand('highlightwords.treeHighlightOptions', e => {
+    context.subscriptions.push(commands.registerCommand('highlightwords.treeHighlightOptions', e => {
         highlight.updateOptions(e.label)
-    })
+    }))
 
-    commands.registerCommand('highlightwords.removeAllHighlights', function () {
+    context.subscriptions.push(commands.registerCommand('highlightwords.removeAllHighlights', function () {
         highlight.clearAll()
-    });
+    }));
 
-    commands.registerCommand('highlightwords.toggleSidebar', function () {
+    context.subscriptions.push(commands.registerCommand('highlightwords.toggleSidebar', function () {
         configValues.showSidebar = !configValues.showSidebar
         commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar)
-    });
+    }));
 
-    commands.registerCommand('highlightwords.setHighlightMode', function () {
+    context.subscriptions.push(commands.registerCommand('highlightwords.setHighlightMode', function () {
         const modes = ['Default', 'Whole Word', 'Ignore Case', 'Both'].map((s, i) => highlight.getMode() == i ? s+' ✅' : s)
         window.showQuickPick(modes).then(option => {
             if (typeof option == 'undefined') return;
 
             highlight.setMode(modes.indexOf(option)) 
         })
-    })
+    }));
+
+    context.subscriptions.push(commands.registerCommand('highlightwords.toggleHighlightOnSelect', function () {
+        configValues.highlightOnSelect = !configValues.highlightOnSelect
+        commands.executeCommand('setContext', 'highlightOnSelect', configValues.highlightOnSelect)
+        if (configValues.highlightOnSelect) setOnSelection()
+    }));
+
     
     function next(e, wrap?:boolean) {
         const doc = window.activeTextEditor.document
@@ -87,9 +96,9 @@ export function activate(context: ExtensionContext) {
         highlight.getLocationIndex(e.highlight.expression, range)
     }
 
-    commands.registerCommand('highlightwords.findNext', e => {
+    context.subscriptions.push(commands.registerCommand('highlightwords.findNext', e => {
         next(e)
-    });
+    }));
 
     function prev(e, wrap?:boolean) {
         const doc = window.activeTextEditor.document
@@ -131,9 +140,9 @@ export function activate(context: ExtensionContext) {
         highlight.getLocationIndex(e.highlight.expression, range)
     }
 
-    commands.registerCommand('highlightwords.findPrevious', e => {
+    context.subscriptions.push(commands.registerCommand('highlightwords.findPrevious', e => {
         prev(e)        
-    });
+    }));
 
     updateConfig()
 
@@ -142,6 +151,9 @@ export function activate(context: ExtensionContext) {
         highlight.setDecorators(configValues.decorators)
         highlight.setMode(configValues.defaultMode)
         commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar)
+        if (configValues.highlightOnSelect) setOnSelection()
+        else if (selectionDisposable) selectionDisposable.dispose()
+
     }
 
     let activeEditor = window.activeTextEditor;
@@ -149,20 +161,32 @@ export function activate(context: ExtensionContext) {
         triggerUpdateDecorations();
     }
 
-    workspace.onDidChangeConfiguration(() => {
+    context.subscriptions.push(workspace.onDidChangeConfiguration(() => {
         updateConfig()
-    })
+    }))
 
-    window.onDidChangeVisibleTextEditors(function (editor) {
+    context.subscriptions.push(window.onDidChangeVisibleTextEditors(function (editor) {
         highlight.updateDecorations();
-    }, null, context.subscriptions);
+    }, null, context.subscriptions));
 
-    workspace.onDidChangeTextDocument(function (event) {
+    function setOnSelection() {
+        selectionDisposable = window.onDidChangeTextEditorSelection((event) => {
+            const s = event.selections[0]
+            if (s.start.line == s.end.line && s.start.character == s.end.character) {
+                highlight.addCurrentWord()
+            }
+            highlight.addCurrentSelection()
+        })
+    }
+
+    if (configValues.highlightOnSelect) setOnSelection()
+
+    context.subscriptions.push(workspace.onDidChangeTextDocument(function (event) {
         activeEditor = window.activeTextEditor;
         if (activeEditor && event.document === activeEditor.document) {
             triggerUpdateDecorations();
         }
-    }, null, context.subscriptions);
+    }, null, context.subscriptions));
 
     var timeout: NodeJS.Timer = null;
     function triggerUpdateDecorations() {
@@ -176,6 +200,6 @@ export function activate(context: ExtensionContext) {
 
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() {
+    if (selectionDisposable) selectionDisposable.dispose()
 }

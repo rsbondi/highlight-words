@@ -77,6 +77,10 @@
                 "title": "Highlight Toggle Sidebar"
             },
             {
+                "command": "highlightwords.toggleHighlightOnSelect",
+                "title": "Highlight Toggle HighlightOnSelect"
+            },
+            {
                 "command": "highlightwords.findPrevious",
                 "title": "Back",
                 "icon": {
@@ -142,6 +146,9 @@
                 },
                 "highlightwords.showSidebar": {
                     "default": true
+                },
+                "highlightwords.highlightOnSelect": {
+                    "default": false
                 }
             }
         },

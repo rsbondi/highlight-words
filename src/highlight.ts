@@ -1,5 +1,5 @@
 'use strict';
-import { window, TextEditorDecorationType, Range, QuickPickItem} from 'vscode';
+import { window, TextEditorDecorationType, Range, QuickPickItem, TextEditor, DecorationOptions} from 'vscode';
 import HighlightTreeProvider from './tree'
 
 export interface Highlightable {
@@ -28,12 +28,16 @@ class Highlight {
     private mode: number
     private treeProvider: HighlightTreeProvider
     private ranges: {}
+    private currentWord: string
+    private currentSelection: string
 
     constructor() {
         this.words = []
         this.decorators = []
         this.treeProvider = new HighlightTreeProvider(this.getWords());
         this.ranges = {}
+        this.currentWord = ""
+        this.currentSelection = ""
         window.registerTreeDataProvider('hilightWordsExplore', this.treeProvider);
     }
 
@@ -55,29 +59,42 @@ class Highlight {
         this.treeProvider.refresh()
     }
 
+    private decorateWord(editor: TextEditor, decs, w: Highlightable, n: number) {
+        const text = editor.document.getText();
+        let match;
+        const opts = w.ignoreCase ? 'gi' : 'g'
+        const expression = w.wholeWord ? '\\b' + w.expression + '\\b' : w.expression
+        const regEx = new RegExp(expression, opts);
+        this.ranges[w.expression] = []
+        while (match = regEx.exec(text)) {
+            const startPos = editor.document.positionAt(match.index);
+            const endPos = editor.document.positionAt(match.index + match[0].length);
+            if (w.expression == this.currentSelection 
+                && editor.document.getText(editor.document.getWordRangeAtPosition(startPos)) 
+                == this.currentWord ) continue;
+            const decoration = { range: new Range(startPos, endPos) };
+            decs[n % decs.length].push(decoration);
+            this.ranges[w.expression].push(decoration.range)
+        }
+    }
+
     public updateDecorations(active?) {
         window.visibleTextEditors.forEach(editor => {
             if (active && editor.document != window.activeTextEditor.document) return;
-            const text = editor.document.getText();
-            let match;
             let decs = [];
             this.decorators.forEach(function () {
                 let dec = [];
                 decs.push(dec);
             });
-            this.words.forEach((w, n) => {
-                const opts = w.ignoreCase ? 'gi' : 'g'
-                const expression = w.wholeWord ? '\\b' + w.expression + '\\b' : w.expression
-                const regEx = new RegExp(expression, opts);
-                this.ranges[w.expression] = []
-                while (match = regEx.exec(text)) {
-                    const startPos = editor.document.positionAt(match.index);
-                    const endPos = editor.document.positionAt(match.index + match[0].length);
-                    const decoration = { range: new Range(startPos, endPos) };
-                    decs[n % decs.length].push(decoration);
-                    this.ranges[w.expression].push(decoration.range)
-                }
-            });
+            this.words.forEach((w, n) => this.decorateWord(editor, decs, w, n));
+            if (this.currentSelection) {
+                this.decorateWord(editor, decs, {
+                    expression: this.currentSelection, ignoreCase: true, wholeWord: false}, 1)
+            }
+            if (this.currentWord) {
+                this.decorateWord(editor, decs, {
+                    expression: this.currentWord, ignoreCase: false, wholeWord: true}, 0)
+            }
             this.decorators.forEach(function (d, i) {
                 editor.setDecorations(d, decs[i]);
             });
@@ -124,13 +141,36 @@ class Highlight {
         })
     }
 
-    public addSelected(withOptions?: boolean) {
+    public addCurrentWord() {
+        const word = this.getWordAtCurrentLocation()
+        this.currentWord = word
+        this.updateDecorations()
+    }
+
+    public addCurrentSelection() {
+        this.currentSelection = window.activeTextEditor.document.getText(window.activeTextEditor.selection)
+        this.updateDecorations()
+    }
+
+    private getSelection() {
+        const editor = window.activeTextEditor;
+        let sel
+        const range = editor.document.getWordRangeAtPosition(editor.selection.start)
+        if(range) sel = editor.document.getText(range)
+        return sel
+    }
+
+    public getWordAtCurrentLocation(): string {
         const editor = window.activeTextEditor;
         let word = editor.document.getText(editor.selection);
         if(!word) {
-            const range = editor.document.getWordRangeAtPosition(editor.selection.start)
-            if(range) word = editor.document.getText(range)
+            word = this.getSelection()
         }
+        return word
+    }
+
+    public addSelected(withOptions?: boolean) {
+        let word = this.getWordAtCurrentLocation()
         if (!word) {
             window.showInformationMessage('Nothing selected!')
             return;
